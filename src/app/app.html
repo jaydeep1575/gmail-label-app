@@ -1,38 +1,105 @@
-<div class="container mt-3">
-  <h4>Gmail-like Labels in ag-Grid</h4>
+<div class="m-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">Gmail-like Labels in ag-Grid</h4>
+
+    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#labelModal">
+      <i class="bi bi-tags-fill me-1"></i> Manage Labels
+    </button>
+  </div>
 
   <div class="card p-3">
-    <!-- <div class="d-flex justify-content-between flex-wrap">
-      
+    <div>
+      <span class="me-2 fw-bold h6">Label Action</span>
+    </div>
+    <div class="d-flex justify-content-between flex-wrap">
+
       <div class="btn-group mb-2">
-        <button class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown">
-          ➕ Add Label
-        </button>
-        <ul class="dropdown-menu">
-          <li *ngFor="let label of allLabels">
+        <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
+          <i class="bi bi-plus-circle"></i> Add Label
+        </button>&nbsp;
+        <!-- <ul class="dropdown-menu"> -->
+        <!-- <li *ngFor="let label of allLabels">
             <a class="dropdown-item" (click)="addLabel(label)">{{ label.name }}</a>
-          </li>
-        </ul>
-        <button class="btn btn-outline-secondary ms-2" [disabled]="!selectedEmails.length">
-          ➖ Remove Label
+          </li> -->
+        <!-- </ul> -->
+        <!-- [disabled]="!selectedEmails.length" -->
+        <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-dash-circle"></i> Remove Label
         </button>
       </div>
 
-      <div class="d-flex flex-wrap align-items-center mb-2">
-        <span class="me-2 fw-bold">Filter by Label</span>
-        <ng-container *ngFor="let label of allLabels">
+      <!-- <div class="d-flex flex-wrap align-items-center mb-2">
+        <span class="me-2 fw-bold">Filter by Label</span> -->
+      <!-- <ng-container *ngFor="let label of allLabels">
           <span class="badge me-2" [ngStyle]="{'background-color': label.color}" role="button"
                 (click)="filterByLabel(label)">
             {{ label.name }}
           </span>
-        </ng-container>
-        <span class="badge bg-secondary" role="button" (click)="clearFilters()">❌ Clear Filters</span>
-      </div> -->
+        </ng-container> -->
+      <!-- <span class="badge bg-secondary" role="button" (click)="clearFilters()">❌ Clear Filters</span> -->
+      <!-- </div> -->
 
       <!-- Manage Labels Button -->
       <!-- <button class="btn btn-outline-danger ms-auto" (click)="openManageLabels()">
         🏷️ Manage Labels
       </button> -->
     </div>
+    <div class="modal fade" id="labelModal" tabindex="-1" aria-labelledby="labelModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="labelModalLabel">Manage Labels</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+
+            <!-- Current Labels -->
+            <h6>Current Labels</h6>
+            <div *ngFor="let label of labels"
+              class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+              <div>
+                <span [style.color]="label.color" class="me-2 fs-5">●</span>
+                <strong>{{ label.name }}</strong><br />
+                <small class="text-muted">{{ label.description }}</small>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="editLabel(label)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteLabel(label)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Edit Form -->
+            <div *ngIf="selectedLabel" class="mt-4">
+              <h6>Edit Label</h6>
+              <div class="mb-2">
+                <label>Label Name</label>
+                <input [(ngModel)]="selectedLabel.name" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label>Color</label>
+                <input [(ngModel)]="selectedLabel.color" type="color" class="form-control form-control-color w-100" />
+              </div>
+              <div class="mb-2">
+                <label>Description</label>
+                <textarea [(ngModel)]="selectedLabel.description" class="form-control"></textarea>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary" (click)="saveLabel()">Save</button> -->
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
-<!-- </div> -->
+  <!-- </div> -->
