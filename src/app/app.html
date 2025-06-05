@@ -2,7 +2,8 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="m-0">Gmail-like Labels in ag-Grid</h4>
 
-    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#labelModal">
+    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#labelModal"
+      (click)="manageLabeles()">
       <i class="bi bi-tags-fill me-1"></i> Manage Labels
     </button>
   </div>
@@ -60,8 +61,8 @@
             <div *ngFor="let label of labels"
               class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
               <div>
-                <span [style.color]="label.color" class="me-2 fs-5">●</span>
-                <strong>{{ label.name }}</strong><br />
+                <span [style.color]="label.colorCode" class="me-2 fs-5">●</span>
+                <strong>{{ label.lableName }}</strong><br />
                 <small class="text-muted">{{ label.description }}</small>
               </div>
               <div>
@@ -74,32 +75,172 @@
               </div>
             </div>
 
-            <!-- Edit Form -->
-            <div *ngIf="selectedLabel" class="mt-4">
-              <h6>Edit Label</h6>
-              <div class="mb-2">
-                <label>Label Name</label>
-                <input [(ngModel)]="selectedLabel.name" class="form-control" />
+            <!-- Add Form -->
+            <div *ngIf="!isEditMode" class="card mt-4">
+              <div class="card-header">
+                <h5 class="mb-0">Add Label</h5>
               </div>
-              <div class="mb-2">
-                <label>Color</label>
-                <input [(ngModel)]="selectedLabel.color" type="color" class="form-control form-control-color w-100" />
-              </div>
-              <div class="mb-2">
-                <label>Description</label>
-                <textarea [(ngModel)]="selectedLabel.description" class="form-control"></textarea>
+              <div class="card-body">
+                <form [formGroup]="labelForm" (ngSubmit)="addLabel()">
+                  <div class="mb-3">
+                    <label class="form-label">Label Name</label>
+                    <input formControlName="lableName" class="form-control" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Color</label>
+                    <input formControlName="colorCode" type="color" class="form-control form-control-color w-100"
+                      style="height: 2rem;" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea formControlName="description" rows="3" class="form-control"></textarea>
+                  </div>
+                  <div class="d-flex justify-content-end gap-2">
+                    <!-- <button class="btn btn-outline-secondary">Cancel</button> -->
+                    <!-- (click)="cancelEdit()" -->
+                    <button class="btn btn-danger">Add Label</button>
+                    <!-- (click)="updateLabel()" -->
+                  </div>
+                </form>
+
+
               </div>
             </div>
 
-          </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary" (click)="saveLabel()">Save</button> -->
+            <!-- Edit Form -->
+            <div *ngIf="isEditMode" class="card mt-4">
+              <div class="card-header">
+                <h5 class="mb-0">Edit Label</h5>
+              </div>
+              <div class="card-body">
+                <form [formGroup]="labelForm" (ngSubmit)="updateLabel()">
+                  <div class="mb-3">
+                    <label class="form-label">Label Name</label>
+                    <input formControlName="lableName" class="form-control" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Color</label>
+                    <input formControlName="colorCode" type="color" class="form-control form-control-color w-100"
+                      style="height: 2rem;" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Description (optional)</label>
+                    <textarea formControlName="description" rows="3" class="form-control"></textarea>
+                  </div>
+                  <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
+                    <button class="btn btn-danger">Update Label</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary" (click)="saveLabel()">Save</button> -->
+            </div>
           </div>
-
         </div>
       </div>
     </div>
+
+
   </div>
-  <!-- </div> -->
+  <div class="card shadow-sm rounded-3 my-4">
+    <div class="card-body p-3">
+      <!-- Table -->
+      <table class="table table-hover align-middle">
+        <thead class="thead-light">
+          <tr>
+            <th>
+              <input type="checkbox" />
+            </th>
+            <th>
+              <i class="bi bi-filter"></i> Subject
+            </th>
+            <th>
+              <i class="bi bi-filter"></i> Sender
+            </th>
+            <th>
+              <i class="bi bi-filter"></i> Date
+            </th>
+            <th>
+              <i class="bi bi-filter"></i> Labels
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let email of pagedEmails" [class.table-primary]="email.selected">
+            <td><input type="checkbox" [(ngModel)]="email.selected" /></td>
+            <td>{{ email.subject }}</td>
+            <td>{{ email.sender }}</td>
+            <td>{{ email.date }}</td>
+            <td>
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <!-- <ng-container *ngFor="let label of email.labels">
+                  <span class="badge d-inline-flex align-items-center text-white px-2 py-1 rounded-pill"
+                    [ngStyle]="{ 'background-color': label.color }">
+                    {{ label.name }}
+                    <button type="button" class="btn-close btn-close-white btn-sm ms-2"
+                      (click)="removeLabel(email.id, label.id)" aria-label="Remove label"></button>
+                  </span>
+                </ng-container> -->
+
+                <!-- Add Label -->
+                <!-- <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary rounded-circle px-2" type="button"
+                    data-bs-toggle="dropdown">
+                    +
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li *ngFor="let label of availableLabels">
+                      <a class="dropdown-item d-flex align-items-center gap-2" (click)="addLabel(email.id, label.id)">
+                        <span class="badge rounded-circle"
+                          [ngStyle]="{ 'background-color': label.color }">&nbsp;&nbsp;</span>
+                        {{ label.name }}
+                      </a>
+                    </li>
+                  </ul>
+                </div> -->
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <div>
+        <label for="pageSizeSelect" class="me-2">Page Size:</label>
+        <select id="pageSizeSelect" class="form-select form-select-sm d-inline-block w-auto" [(ngModel)]="pageSize"
+          (change)="onPageSizeChange()">
+          <option *ngFor="let size of [5, 10, 25, 50]" [value]="size">{{ size }}</option>
+        </select>
+      </div>
+      <div>
+        <nav>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(1)">«</button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)">‹</button>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link">{{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ emails.length }}</span>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(currentPage + 1)">›</button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(totalPages)">»</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+
+</div>
