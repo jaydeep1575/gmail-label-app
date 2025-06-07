@@ -9,42 +9,102 @@
   </div>
 
   <div class="card p-3">
-    <div>
-      <span class="me-2 fw-bold h6">Label Action</span>
-    </div>
-    <div class="d-flex justify-content-between flex-wrap">
 
-      <div class="btn-group mb-2">
-        <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
-          <i class="bi bi-plus-circle"></i> Add Label
-        </button>&nbsp;
-        <!-- <ul class="dropdown-menu"> -->
-        <!-- <li *ngFor="let label of allLabels">
-            <a class="dropdown-item" (click)="addLabel(label)">{{ label.name }}</a>
-          </li> -->
-        <!-- </ul> -->
-        <!-- [disabled]="!selectedEmails.length" -->
-        <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="bi bi-dash-circle"></i> Remove Label
-        </button>
+    <!-- <div class="d-flex flex-wrap"> -->
+    <div class="row align-items-center">
+
+      <!-- <span class="me-2 fw-bold h6">Label Action</span>
+      <div>
+        <div class="d-flex flex-wrap">
+          <div class="btn-group mb-2 me-2">
+            <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
+              <i class="bi bi-plus-circle"></i> Add Label
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let label of labels">
+                <a class="dropdown-item" (click)="bulkAddLabel(label.id)">
+                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
+                  label.lableName }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="btn-group mb-2">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-dash-circle"></i> Remove Label
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let label of labels">
+                <a class="dropdown-item" (click)="bulkRemoveLabel(label.id)">
+                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
+                  label.lableName }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+
+      </div> -->
+
+      <div class="col-6">
+        <span class="me-2 fw-bold h6">Label Action</span>
+        <div>
+          <div class="btn-group mb-2 me-2">
+            <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
+              <i class="bi bi-plus-circle"></i> Add Label
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let label of labels">
+                <a class="dropdown-item" (click)="bulkAddLabel(label.id)">
+                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
+                  label.lableName }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="btn-group mb-2">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-dash-circle"></i> Remove Label
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let label of labels">
+                <a class="dropdown-item" (click)="bulkRemoveLabel(label.id)">
+                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
+                  label.lableName }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-
-      <!-- <div class="d-flex flex-wrap align-items-center mb-2">
-        <span class="me-2 fw-bold">Filter by Label</span> -->
-      <!-- <ng-container *ngFor="let label of allLabels">
-          <span class="badge me-2" [ngStyle]="{'background-color': label.color}" role="button"
-                (click)="filterByLabel(label)">
+      <div class="col-6">
+        <span class="me-2 fw-bold">Filter by Label</span>
+        <!-- <div>
+          <button *ngFor="let label of labels" (click)="filterByLabel(label.id)"
+            [ngClass]="{'active': activeFilters.includes(label.id)}">
             {{ label.name }}
-          </span>
-        </ng-container> -->
-      <!-- <span class="badge bg-secondary" role="button" (click)="clearFilters()">❌ Clear Filters</span> -->
-      <!-- </div> -->
+          </button>
+          <button (click)="activeFilters=[]; filterByLabel(label.id)">Clear Filters</button>
+        </div> -->
+        <div>
+          <ng-container *ngFor="let label of labels">
+            <span class="badge me-2" [ngStyle]="{'background-color': label.colorCode}" role="button"
+              (click)="filterByLabel(label.id)">
+              {{ label.lableName }}
+            </span>
+          </ng-container>
+          <span class="badge bg-secondary" role="button" (click)="clearFilters()">❌ Clear Filters</span>
+        </div>
+      </div>
+    </div>
+    <!-- </div> -->
 
-      <!-- Manage Labels Button -->
-      <!-- <button class="btn btn-outline-danger ms-auto" (click)="openManageLabels()">
+    <!-- Manage Labels Button -->
+    <!-- <button class="btn btn-outline-danger ms-auto" (click)="openManageLabels()">
         🏷️ Manage Labels
       </button> -->
-    </div>
     <div class="modal fade" id="labelModal" tabindex="-1" aria-labelledby="labelModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -152,9 +212,7 @@
       <table class="table table-hover align-middle">
         <thead class="thead-light">
           <tr>
-            <th>
-              <input type="checkbox" />
-            </th>
+            <th><input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllSelection()"></th>
             <th>
               <i class="bi bi-filter"></i> Subject
             </th>
@@ -170,38 +228,32 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let email of pagedEmails" [class.table-primary]="email.selected">
-            <td><input type="checkbox" [(ngModel)]="email.selected" /></td>
+          <tr *ngFor="let email of filteredEmails" [class.table-primary]="email.selected">
+            <td><input type="checkbox" [(ngModel)]="email.selected"></td>
             <td>{{ email.subject }}</td>
             <td>{{ email.sender }}</td>
-            <td>{{ email.date }}</td>
+            <td>{{ email.date | date:'yyyy-MM-dd'}}</td>
             <td>
-              <div class="d-flex flex-wrap align-items-center gap-2">
-                <!-- <ng-container *ngFor="let label of email.labels">
-                  <span class="badge d-inline-flex align-items-center text-white px-2 py-1 rounded-pill"
-                    [ngStyle]="{ 'background-color': label.color }">
-                    {{ label.name }}
-                    <button type="button" class="btn-close btn-close-white btn-sm ms-2"
-                      (click)="removeLabel(email.id, label.id)" aria-label="Remove label"></button>
-                  </span>
-                </ng-container> -->
+              <ng-container *ngFor="let label of email.labels">
+                <span class="badge me-1" [style.background-color]="label.colorCode">
+                  {{ label.lableName }}
+                  <button class="btn btn-sm btn-close ms-1" (click)="removeLabelInGmail(email.id,label.id)"></button>
+                </span>
+              </ng-container>
 
-                <!-- Add Label -->
-                <!-- <div class="dropdown">
-                  <button class="btn btn-sm btn-outline-secondary rounded-circle px-2" type="button"
-                    data-bs-toggle="dropdown">
-                    +
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li *ngFor="let label of availableLabels">
-                      <a class="dropdown-item d-flex align-items-center gap-2" (click)="addLabel(email.id, label.id)">
-                        <span class="badge rounded-circle"
-                          [ngStyle]="{ 'background-color': label.color }">&nbsp;&nbsp;</span>
-                        {{ label.name }}
-                      </a>
-                    </li>
-                  </ul>
-                </div> -->
+              <!-- Add Dropdown -->
+              <div class="dropdown d-inline">
+                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  +
+                </button>
+                <ul class="dropdown-menu">
+                  <li *ngFor="let label of getAvailableLabels(email)">
+                    <a class="dropdown-item" (click)="addLabelInGmail(email.id, label.id)">
+                      <span class="badge me-1" [style.background-color]="label.colorCode">&nbsp;</span>
+                      {{ label.lableName }}
+                    </a>
+                  </li>
+                </ul>
               </div>
             </td>
           </tr>
@@ -228,7 +280,7 @@
               <button class="page-link" (click)="goToPage(currentPage - 1)">‹</button>
             </li>
             <li class="page-item disabled">
-              <span class="page-link">{{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ emails.length }}</span>
+              <span class="page-link">{{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ gmails.length }}</span>
             </li>
             <li class="page-item" [class.disabled]="currentPage === totalPages">
               <button class="page-link" (click)="goToPage(currentPage + 1)">›</button>

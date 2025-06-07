@@ -19,10 +19,11 @@ export class App implements OnInit {
   labelForm!: FormGroup;
   isEditMode: boolean = false;
   selectedLabelId: any = null;
-  emails: any[] = [];
+  gmails: any[] = [];
   pageSize = 10;
   currentPage = 1;
   pagedEmails: any = [];
+  selectAll = false;
 
   constructor(private httpService: HttpService, private fb: FormBuilder) { }
 
@@ -38,8 +39,8 @@ export class App implements OnInit {
   }
   getGmails() {
     this.httpService.get<any[]>(this.gmailApiUrl).subscribe((data: any) => {
-      this.emails = data;
-      console.log(this.labels);
+      this.gmails = data;
+      console.log(this.gmails);
       this.updatePagedEmails();
     });
   }
@@ -68,10 +69,11 @@ export class App implements OnInit {
     this.labelForm.reset({ colorCode: '#0000FF' });
     if (label.id) {
       this.httpService.delete(this.apiUrl + "/" + label.id).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.getLabels();
+          this.getGmails();
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to delete label:', err);
         }
       });
@@ -91,13 +93,14 @@ export class App implements OnInit {
     if (this.labelForm.valid) {
       const labelData = this.labelForm.value;
       this.httpService.post(this.apiUrl, labelData).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log('Label created:', res);
           this.isEditMode = false;
           this.getLabels();
+          this.getGmails();
           this.labelForm.reset({ colorCode: '#0000FF' }); // Reset, keep default color
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to create label:', err);
         }
       });
@@ -118,13 +121,14 @@ export class App implements OnInit {
       console.log("updated data labels", labelData);
 
       this.httpService.put(this.apiUrl + "/" + this.selectedLabelId, labelData).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log('Label updated:', res);
           this.isEditMode = false;
           this.getLabels();
+          this.getGmails();
           this.labelForm.reset({ colorCode: '#0000FF' }); // Reset, keep default color
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to create label:', err);
         }
       });
@@ -138,7 +142,7 @@ export class App implements OnInit {
   }
 
   get totalPages() {
-    return Math.ceil(this.emails.length / this.pageSize);
+    return Math.ceil(this.gmails.length / this.pageSize);
   }
 
   goToPage(page: number) {
@@ -150,7 +154,7 @@ export class App implements OnInit {
   updatePagedEmails() {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.pagedEmails = this.emails.slice(start, end);
+    this.pagedEmails = this.gmails.slice(start, end);
   }
 
   getStartIndex() {
@@ -159,7 +163,7 @@ export class App implements OnInit {
 
 
   getEndIndex() {
-    return Math.min(this.getStartIndex() + this.pageSize, this.emails.length);
+    return Math.min(this.getStartIndex() + this.pageSize, this.gmails.length);
   }
 
 
@@ -167,4 +171,106 @@ export class App implements OnInit {
     this.currentPage = 1;
     this.updatePagedEmails();
   }
+
+  getAvailableLabels(gmail: any) {
+    const assigned = gmail.labels.map((l: any) => l.id);
+    return this.labels.filter(l => !assigned.includes(l.id));
+  }
+
+  addLabelInGmail(gmailId: number, labelId: number) {
+    this.httpService.post(this.gmailApiUrl + '/add-label', { gmailId, labelId }).subscribe(({
+      next: () => {
+        this.getGmails();
+        this.getLabels();
+      },
+      error: (err: any) => {
+        console.error('Failed to create label:', err);
+      }
+
+    }));
+  }
+
+  removeLabelInGmail(gmailId: number, labelId: number) {
+    this.httpService.delete(this.gmailApiUrl + `/${gmailId}/remove-label/${labelId}`).subscribe(({
+      next: () => {
+        this.getGmails();
+        this.getLabels();
+      },
+      error: (err: any) => {
+        console.error('Failed to create label:', err);
+      }
+    }));
+  }
+
+  bulkAddLabel(labelId: number) {
+    const selectedIds = this.gmails.filter(e => e.selected).map(e => e.id);
+    if (selectedIds.length === 0) {
+      alert('Please select at least one email.');
+      return;
+    }
+
+    this.httpService.post(this.gmailApiUrl + '/bulk-add-label', { labelId, gmailIds: selectedIds }).subscribe(({
+      next: () => {
+        this.getGmails();
+        this.getLabels();
+      },
+      error: (err: any) => {
+        console.error('Failed to create label:', err);
+      }
+    }));
+  }
+
+  bulkRemoveLabel(labelId: number) {
+    const selectedIds = this.gmails.filter(e => e.selected).map(e => e.id);
+    if (selectedIds.length === 0) {
+      alert('Please select at least one email.');
+      return;
+    }
+    this.httpService.post(this.gmailApiUrl + '/bulk-remove-label', { labelId, gmailIds: selectedIds }).subscribe(({
+      next: () => {
+        this.getGmails();
+        this.getLabels();
+      },
+      error: (err: any) => {
+        console.error('Failed to create label:', err);
+      }
+    }));
+  }
+
+  activeLabelId: number | null = null;
+
+  filterByLabel(labelId: any) {
+    this.activeLabelId = labelId;
+    // If the same label is clicked again, toggle off
+    // if (this.activeLabelId === labelId) {
+    //   this.activeLabelId = null;
+    // } else {
+    //   this.activeLabelId = labelId;
+    // }
+  }
+
+  toggleAllSelection() {
+    this.gmails.forEach(email => email.selected = this.selectAll);
+  }
+
+  // toggleLabelFilter(labelId: number) {
+  //   if (this.activeFilters.includes(labelId)) {
+  //     this.activeFilters = this.activeFilters.filter(id => id !== labelId);
+  //   } else {
+  //     this.activeFilters.push(labelId);
+  //   }
+  //   this.refreshEmailList();
+  // }
+  clearFilters() {
+    this.activeLabelId = null;
+  }
+
+  get filteredEmails(): any[] {
+    if (this.activeLabelId == null) return this.pagedEmails;
+
+    return this.pagedEmails.filter((email: any) =>
+      email.labels.some((label: any) => label.id === this.activeLabelId)
+    );
+  }
+
 }
