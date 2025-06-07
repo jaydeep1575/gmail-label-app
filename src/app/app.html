@@ -90,12 +90,14 @@
         </div> -->
         <div>
           <ng-container *ngFor="let label of labels">
-            <span class="badge me-2" [ngStyle]="{'background-color': label.colorCode}" role="button"
+            <span class="badge rounded-pill me-2 p-2 " [ngStyle]="{'background-color': label.colorCode}" role="button"
               (click)="filterByLabel(label.id)">
               {{ label.lableName }}
             </span>
           </ng-container>
-          <span class="badge bg-secondary" role="button" (click)="clearFilters()">❌ Clear Filters</span>
+          <span class="badge bg-secondary" role="button" (click)="clearFilters()"><i
+              class="bi bi-x-circle-fill me-1 cursor-pointer"></i>
+            Clear Filters</span>
         </div>
       </div>
     </div>
@@ -235,21 +237,26 @@
             <td>{{ email.date | date:'yyyy-MM-dd'}}</td>
             <td>
               <ng-container *ngFor="let label of email.labels">
-                <span class="badge me-1" [style.background-color]="label.colorCode">
+                <span class="badge rounded-pill me-1 p-2" [style.background-color]="label.colorCode">
                   {{ label.lableName }}
-                  <button class="btn btn-sm btn-close ms-1" (click)="removeLabelInGmail(email.id,label.id)"></button>
+                  <!-- <button class="btn btn-sm btn-close ms-1" (click)="removeLabelInGmail(email.id,label.id)"></button> -->
+                  <span class="remove-icon ms-1" (click)="removeLabelInGmail(email.id,label.id)"><i
+                      class="bi bi-x-circle-fill me-1 "></i></span>
+
                 </span>
               </ng-container>
 
               <!-- Add Dropdown -->
               <div class="dropdown d-inline">
-                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <span class="add-label badge rounded-pill dropdown-toggle" data-bs-toggle="dropdown"><i
+                    class="bi bi-plus"></i></span>
+                <!-- <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                   +
-                </button>
+                </button> -->
                 <ul class="dropdown-menu">
                   <li *ngFor="let label of getAvailableLabels(email)">
                     <a class="dropdown-item" (click)="addLabelInGmail(email.id, label.id)">
-                      <span class="badge me-1" [style.background-color]="label.colorCode">&nbsp;</span>
+                      <span class="lable-icon me-1" [style.background-color]="label.colorCode">&nbsp;</span>
                       {{ label.lableName }}
                     </a>
                   </li>
