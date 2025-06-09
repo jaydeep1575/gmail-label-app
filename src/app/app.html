@@ -44,7 +44,7 @@
           </div>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-6" *ngIf="labels.length > 0">
         <span class="me-2 fw-bold">Filter by Label</span>
         <div>
           <ng-container *ngFor="let label of labels">
@@ -180,7 +180,7 @@
               <div class="dropdown d-inline">
                 <span class="add-label badge rounded-pill dropdown-toggle" data-bs-toggle="dropdown"><i
                     class="bi bi-plus"></i></span>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" *ngIf="email.labels.length > 0">
                   <li *ngFor="let label of getAvailableLabels(email)">
                     <a class="dropdown-item" (click)="addLabelInGmail(email.id, label.id)">
                       <span class="badge me-1" [style.background-color]="label.colorCode">&nbsp;</span>
