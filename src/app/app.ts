@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, Validators } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { OnInit } from '../../node_modules/@angular/core/index';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ export class App implements OnInit {
   apiUrl = 'https://localhost:7011/api/Label'; // Change to your real API
   gmailApiUrl = 'https://localhost:7011/api/Gmail';
   labelForm!: FormGroup;
+  gmailForm!: FormGroup;
   isEditMode: boolean = false;
   selectedLabelId: any = null;
   gmails: any[] = [];
@@ -24,15 +25,22 @@ export class App implements OnInit {
   currentPage = 1;
   pagedEmails: any = [];
   selectAll = false;
+  activeLabelId: number | null = null;
+  selectedLabel: any = false;
+  protected title = 'gmail-label-app';
 
   constructor(private httpService: HttpService, private fb: FormBuilder) { }
 
   ngOnInit(): void {
-    // Initialize the form
     this.labelForm = this.fb.group({
-      lableName: [''],               // Label name
-      colorCode: ['#0000FF'],       // Default color value
-      description: ['']         // Optional description
+      lableName: ['', Validators.required],
+      colorCode: ['#0000FF', Validators.required],
+      description: ['']
+    });
+    this.gmailForm = this.fb.group({
+      subject: ['', Validators.required],
+      sender: ['', [Validators.required, Validators.email]],
+      date: ['', Validators.required]
     });
     this.getGmails();
     this.getLabels();
@@ -51,9 +59,6 @@ export class App implements OnInit {
 
     });
   }
-  protected title = 'gmail-label-app';
-
-  selectedLabel: any = false;
 
   editLabel(label: any) {
     console.log("label :::", label);
@@ -237,30 +242,14 @@ export class App implements OnInit {
     }));
   }
 
-  activeLabelId: number | null = null;
-
   filterByLabel(labelId: any) {
     this.activeLabelId = labelId;
-    // If the same label is clicked again, toggle off
-    // if (this.activeLabelId === labelId) {
-    //   this.activeLabelId = null;
-    // } else {
-    //   this.activeLabelId = labelId;
-    // }
   }
 
   toggleAllSelection() {
     this.gmails.forEach(email => email.selected = this.selectAll);
   }
 
-  // toggleLabelFilter(labelId: number) {
-  //   if (this.activeFilters.includes(labelId)) {
-  //     this.activeFilters = this.activeFilters.filter(id => id !== labelId);
-  //   } else {
-  //     this.activeFilters.push(labelId);
-  //   }
-  //   this.refreshEmailList();
-  // }
   clearFilters() {
     this.activeLabelId = null;
   }
@@ -273,4 +262,20 @@ export class App implements OnInit {
     );
   }
 
+  addGmail() {
+    if (this.gmailForm.valid) {
+      const gmailData = this.gmailForm.value;
+      this.httpService.post(this.gmailApiUrl, gmailData).subscribe({
+        next: (res: any) => {
+          console.log('Label created:', res);
+          this.getLabels();
+          this.getGmails();
+          this.gmailForm.reset();
+        },
+        error: (err: any) => {
+          console.error('Failed to create label:', err);
+        }
+      });
+    }
+  }
 }

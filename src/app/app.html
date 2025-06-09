@@ -1,53 +1,18 @@
 <div class="m-3">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="m-0">Gmail-like Labels in ag-Grid</h4>
-
-    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#labelModal"
-      (click)="manageLabeles()">
-      <i class="bi bi-tags-fill me-1"></i> Manage Labels
-    </button>
+    <div>
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#gmailModal">
+        <i class="bi bi-envelope-fill me-1"></i> Add Gmail
+      </button>&nbsp;
+      <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#labelModal"
+        (click)="manageLabeles()">
+        <i class="bi bi-tags-fill me-1"></i> Manage Labels
+      </button>
+    </div>
   </div>
-
   <div class="card p-3">
-
-    <!-- <div class="d-flex flex-wrap"> -->
     <div class="row align-items-center">
-
-      <!-- <span class="me-2 fw-bold h6">Label Action</span>
-      <div>
-        <div class="d-flex flex-wrap">
-          <div class="btn-group mb-2 me-2">
-            <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
-              <i class="bi bi-plus-circle"></i> Add Label
-            </button>
-            <ul class="dropdown-menu">
-              <li *ngFor="let label of labels">
-                <a class="dropdown-item" (click)="bulkAddLabel(label.id)">
-                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
-                  label.lableName }}
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="btn-group mb-2">
-            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-              <i class="bi bi-dash-circle"></i> Remove Label
-            </button>
-            <ul class="dropdown-menu">
-              <li *ngFor="let label of labels">
-                <a class="dropdown-item" (click)="bulkRemoveLabel(label.id)">
-                  <span class="badge me-2" [ngStyle]="{ 'background-color': label.colorCode }">&nbsp;</span>{{
-                  label.lableName }}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-
-
-      </div> -->
-
       <div class="col-6">
         <span class="me-2 fw-bold h6">Label Action</span>
         <div>
@@ -81,13 +46,6 @@
       </div>
       <div class="col-6">
         <span class="me-2 fw-bold">Filter by Label</span>
-        <!-- <div>
-          <button *ngFor="let label of labels" (click)="filterByLabel(label.id)"
-            [ngClass]="{'active': activeFilters.includes(label.id)}">
-            {{ label.name }}
-          </button>
-          <button (click)="activeFilters=[]; filterByLabel(label.id)">Clear Filters</button>
-        </div> -->
         <div>
           <ng-container *ngFor="let label of labels">
             <span class="badge rounded-pill me-2 p-2 " [ngStyle]="{'background-color': label.colorCode}" role="button"
@@ -95,30 +53,20 @@
               {{ label.lableName }}
             </span>
           </ng-container>
-          <span class="badge bg-secondary" role="button" (click)="clearFilters()"><i
+          <span class="badge rounded-pill p-2 bg-secondary" role="button" (click)="clearFilters()"><i
               class="bi bi-x-circle-fill me-1 cursor-pointer"></i>
             Clear Filters</span>
         </div>
       </div>
     </div>
-    <!-- </div> -->
-
-    <!-- Manage Labels Button -->
-    <!-- <button class="btn btn-outline-danger ms-auto" (click)="openManageLabels()">
-        🏷️ Manage Labels
-      </button> -->
     <div class="modal fade" id="labelModal" tabindex="-1" aria-labelledby="labelModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-
           <div class="modal-header">
             <h5 class="modal-title" id="labelModalLabel">Manage Labels</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-
           <div class="modal-body">
-
-            <!-- Current Labels -->
             <h6>Current Labels</h6>
             <div *ngFor="let label of labels"
               class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
@@ -136,8 +84,6 @@
                 </button>
               </div>
             </div>
-
-            <!-- Add Form -->
             <div *ngIf="!isEditMode" class="card mt-4">
               <div class="card-header">
                 <h5 class="mb-0">Add Label</h5>
@@ -158,19 +104,11 @@
                     <textarea formControlName="description" rows="3" class="form-control"></textarea>
                   </div>
                   <div class="d-flex justify-content-end gap-2">
-                    <!-- <button class="btn btn-outline-secondary">Cancel</button> -->
-                    <!-- (click)="cancelEdit()" -->
                     <button class="btn btn-danger">Add Label</button>
-                    <!-- (click)="updateLabel()" -->
                   </div>
                 </form>
-
-
               </div>
             </div>
-
-
-            <!-- Edit Form -->
             <div *ngIf="isEditMode" class="card mt-4">
               <div class="card-header">
                 <h5 class="mb-0">Edit Label</h5>
@@ -199,18 +137,14 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <!-- <button type="button" class="btn btn-primary" (click)="saveLabel()">Save</button> -->
             </div>
           </div>
         </div>
       </div>
     </div>
-
-
   </div>
   <div class="card shadow-sm rounded-3 my-4">
     <div class="card-body p-3">
-      <!-- Table -->
       <table class="table table-hover align-middle">
         <thead class="thead-light">
           <tr>
@@ -239,24 +173,17 @@
               <ng-container *ngFor="let label of email.labels">
                 <span class="badge rounded-pill me-1 p-2" [style.background-color]="label.colorCode">
                   {{ label.lableName }}
-                  <!-- <button class="btn btn-sm btn-close ms-1" (click)="removeLabelInGmail(email.id,label.id)"></button> -->
                   <span class="remove-icon ms-1" (click)="removeLabelInGmail(email.id,label.id)"><i
                       class="bi bi-x-circle-fill me-1 "></i></span>
-
                 </span>
               </ng-container>
-
-              <!-- Add Dropdown -->
               <div class="dropdown d-inline">
                 <span class="add-label badge rounded-pill dropdown-toggle" data-bs-toggle="dropdown"><i
                     class="bi bi-plus"></i></span>
-                <!-- <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  +
-                </button> -->
                 <ul class="dropdown-menu">
                   <li *ngFor="let label of getAvailableLabels(email)">
                     <a class="dropdown-item" (click)="addLabelInGmail(email.id, label.id)">
-                      <span class="lable-icon me-1" [style.background-color]="label.colorCode">&nbsp;</span>
+                      <span class="badge me-1" [style.background-color]="label.colorCode">&nbsp;</span>
                       {{ label.lableName }}
                     </a>
                   </li>
@@ -267,8 +194,6 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Pagination -->
     <div class="card-footer d-flex justify-content-between align-items-center">
       <div>
         <label for="pageSizeSelect" class="me-2">Page Size:</label>
@@ -300,6 +225,34 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="gmailModal" tabindex="-1" aria-labelledby="gmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
 
-
+        <div class="modal-header">
+          <h5 class="modal-title" id="gmailModalLabel">Add Gmail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="gmailForm" (ngSubmit)="addGmail()">
+            <div class="mb-3">
+              <label class="form-label">Subject</label>
+              <input formControlName="subject" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Sender</label>
+              <input formControlName="sender" class="form-control" type="email" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Date</label>
+              <input formControlName="date" class="form-control" type="date" />
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-primary">Add Gmail</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
