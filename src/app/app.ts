@@ -24,7 +24,7 @@ export class App implements OnInit {
   pageSize = 10;
   currentPage = 1;
   pagedEmails: any = [];
-  selectAll = false;
+  selectAll: boolean = false;
   activeLabelId: number | null = null;
   selectedLabel: any = false;
   protected title = 'gmail-label-app';
@@ -218,6 +218,7 @@ export class App implements OnInit {
       next: () => {
         this.getGmails();
         this.getLabels();
+        this.selectAll = false;
       },
       error: (err: any) => {
         console.error('Failed to create label:', err);
@@ -235,6 +236,7 @@ export class App implements OnInit {
       next: () => {
         this.getGmails();
         this.getLabels();
+        this.selectAll = false;
       },
       error: (err: any) => {
         console.error('Failed to create label:', err);
@@ -247,7 +249,15 @@ export class App implements OnInit {
   }
 
   toggleAllSelection() {
-    this.gmails.forEach(email => email.selected = this.selectAll);
+    this.filteredEmails.forEach((email: any) => email.selected = this.selectAll);
+  }
+
+  checkIfAllSelected() {
+    this.selectAll = this.filteredEmails.every((email: any) => email.selected);
+  }
+
+  hasSelectedEmails(): boolean {
+    return this.filteredEmails.some((email: any) => email.selected);
   }
 
   clearFilters() {

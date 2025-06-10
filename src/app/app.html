@@ -17,7 +17,8 @@
         <span class="me-2 fw-bold h6">Label Action</span>
         <div>
           <div class="btn-group mb-2 me-2">
-            <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown">
+            <button class="btn btn-danger dropdown-toggle pr-2" data-bs-toggle="dropdown"
+              [disabled]="!hasSelectedEmails()">
               <i class="bi bi-plus-circle"></i> Add Label
             </button>
             <ul class="dropdown-menu">
@@ -30,7 +31,8 @@
             </ul>
           </div>
           <div class="btn-group mb-2">
-            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+              [disabled]="!hasSelectedEmails()">
               <i class="bi bi-dash-circle"></i> Remove Label
             </button>
             <ul class="dropdown-menu">
@@ -165,12 +167,12 @@
         </thead>
         <tbody>
           <tr *ngFor="let email of filteredEmails" [class.table-primary]="email.selected">
-            <td><input type="checkbox" [(ngModel)]="email.selected"></td>
+            <td><input type="checkbox" [(ngModel)]="email.selected" (change)="checkIfAllSelected()"></td>
             <td>{{ email.subject }}</td>
             <td>{{ email.sender }}</td>
             <td>{{ email.date | date:'yyyy-MM-dd'}}</td>
             <td>
-              <ng-container *ngFor="let label of email.labels">
+              <ng-container *ngFor=" let label of email.labels">
                 <span class="badge rounded-pill me-1 p-2" [style.background-color]="label.colorCode">
                   {{ label.lableName }}
                   <span class="remove-icon ms-1" (click)="removeLabelInGmail(email.id,label.id)"><i
@@ -178,9 +180,11 @@
                 </span>
               </ng-container>
               <div class="dropdown d-inline">
-                <span class="add-label badge rounded-pill dropdown-toggle" data-bs-toggle="dropdown"><i
+                <span class="add-label badge rounded-pill dropdown-toggle" [class.disabled]="labels.length === 0"
+                  [style.pointerEvents]="labels.length === 0 ? 'none' : 'auto'"
+                  [style.opacity]="labels.length === 0 ? '0.6' : '1'" data-bs-toggle="dropdown"><i
                     class="bi bi-plus"></i></span>
-                <ul class="dropdown-menu" *ngIf="email.labels.length > 0">
+                <ul class="dropdown-menu">
                   <li *ngFor="let label of getAvailableLabels(email)">
                     <a class="dropdown-item" (click)="addLabelInGmail(email.id, label.id)">
                       <span class="badge me-1" [style.background-color]="label.colorCode">&nbsp;</span>
